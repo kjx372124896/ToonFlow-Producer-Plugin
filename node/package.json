@@ -1,0 +1,14 @@
+{
+  "name": "@toonflow/node-producer-studio",
+  "version": "0.3.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build --config vite.config.ts"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.42",
+    "@vue-flow/core": "^1.48.2",
+    "element-plus": "^2.14.5"
+  }
+}

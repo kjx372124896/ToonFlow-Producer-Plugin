@@ -1,0 +1,23 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+const file = resolve(import.meta.dirname, "..", "dist", "producerStudioNode.umd.js");
+test("node UMD 与 Toonflow 安装器检查兼容", () => {
+  assert.ok(existsSync(file), "需要先 npm run build");
+  const source = readFileSync(file, "utf8");
+  const header = source.match(/^\/\*! toonflowNode:([^\r\n]*) \*\/(?:\r?\n|$)/)?.[1];
+  assert.ok(header, "缺失 toonflowNode 元数据");
+  const meta = JSON.parse(header);
+  assert.equal(meta.displayName, "短剧制片中心");
+  assert.equal(meta.version, "0.3.1");
+  assert.ok(source.includes("旧版") && source.includes("导演手册"),"应打包旧版完整预设");
+  assert.ok(source.includes("文本生成"),"项目应有文本固定模型的设置说明");
+  assert.ok(source.includes("放入已勾选分镜板") && !source.includes("检查当前画布"), "应提供分镜板一步放入画布入口");
+  assert.ok(!source.includes("MCP 地址<input"), "新版节点不应存在 MCP 地址输入框");
+  assert.ok(!source.includes("MCP Bearer"), "新版节点不应要求 MCP 密钥");
+  assert.ok(source.includes("toonflowNodeHost"), "缺少宿主入口");
+  assert.ok(source.includes("toonflowNodes.producerStudioNode"), "节点导出名不匹配");
+  assert.ok(!source.startsWith("/*! toonflowExt:"), "错误的文档扩展格式");
+  assert.ok(source.includes(".studio-node-card[data-v-") && source.includes(".producer-node-overlay[data-v-"), "节点与全屏界面样式未打包");
+});

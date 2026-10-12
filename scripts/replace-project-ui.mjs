@@ -1,0 +1,15 @@
+import {readFile,writeFile} from "node:fs/promises";
+const path=new URL("../src/Studio.vue",import.meta.url);
+let text=await readFile(path,"utf8");
+const begin=text.indexOf('        <section v-if="tab===\'project\'"');
+const end=text.indexOf('        <section v-if="tab===\'novel\'"',begin);
+if(begin<0||end<0)throw Error("project section markers not found");
+const replacement='        <section v-if="tab===\'project\'" class="section">\n          <ProjectSettings :studio="studio" :context="context" @save="save" />\n        </section>\n\n';
+text=text.slice(0,begin)+replacement+text.slice(end);
+const marker='import { createLocalCanvasClient } from "./localCanvas.mjs";';
+if(!text.includes(marker))throw Error("Studio import marker missing");
+text=text.replace(marker,marker+'\nimport ProjectSettings from "./ProjectSettings.vue";');
+text=text.replace('独立扩展 v0.1 ·','制片插件 v0.3 ·');
+text=text.replace('所有项目数据保存在当前 .tfprod 文件，媒体资产独立存入当前工作区。','每个项目独立保存在画布工作区的本地文件夹中。');
+await writeFile(path,text,"utf8");
+console.log("REPLACED_PROJECT_SECTION",begin,end,"NEW_BYTES",Buffer.byteLength(text,"utf8"));

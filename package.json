@@ -1,0 +1,21 @@
+{
+  "name": "toonflow-producer-studio",
+  "version": "0.9.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-node.mjs",
+    "deploy:stable": "node scripts/deploy-stable.mjs",
+    "build:stable": "npm run build && npm run deploy:stable",
+    "build:legacy-document": "vite build",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm run build && npm test"
+  },
+  "dependencies": {
+    "vue": "^3.5.43"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.8",
+    "vite": "^8.2.2"
+  }
+}
